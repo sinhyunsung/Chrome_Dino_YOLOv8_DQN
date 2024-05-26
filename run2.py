@@ -42,8 +42,15 @@ try:
 
         # YOLO 모델로 디텍팅
         results = model(screenshot)[0]
-        
-        # 검출된 객체 그리기
+
+        # 16x16 배열 초기화
+        grid_size = 16
+        cell_size = 640 // grid_size
+        grid = np.zeros((grid_size, grid_size), dtype=int)
+
+        overlay = screenshot.copy()
+
+        # 검출된 객체 그리기 및 중앙점 계산
         for box in results.boxes:
             x1, y1, x2, y2 = map(int, box.xyxy[0])
             cls_id = int(box.cls)
@@ -52,7 +59,34 @@ try:
 
             # 박스 그리기
             cv2.rectangle(screenshot, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(screenshot, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+            cv2.putText(screenshot, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+            # 중앙점 계산 및 그리드 셀에 표시
+            center_x = (x1 + x2) // 2
+            center_y = (y1 + y2) // 2
+            grid_x = center_x // cell_size
+            grid_y = center_y // cell_size
+
+            if 0 <= grid_x < grid_size and 0 <= grid_y < grid_size:
+                grid[grid_y, grid_x] = 1
+
+        # 그리드 셀 표시 및 경계선 그리기
+        for i in range(grid_size):
+            for j in range(grid_size):
+                start_x = j * cell_size
+                start_y = i * cell_size
+                end_x = start_x + cell_size
+                end_y = start_y + cell_size
+                
+                if grid[i, j] == 1:
+                    cv2.rectangle(overlay, (start_x, start_y), (end_x, end_y), (0, 0, 255), -1)
+
+                # 경계선 그리기
+                cv2.rectangle(overlay, (start_x, start_y), (end_x, end_y), (0, 0, 0), 1)
+
+        # 반투명 오버레이 적용
+        alpha = 0.4  # 반투명도 설정
+        cv2.addWeighted(overlay, alpha, screenshot, 1 - alpha, 0, screenshot)
 
         # 결과 이미지 표시
         cv2.imshow("Dino Game Detection", screenshot)
