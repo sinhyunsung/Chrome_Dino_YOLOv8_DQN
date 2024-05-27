@@ -1,9 +1,9 @@
 # 환경
-
-파이썬 3.8.6 
-cuda 11.7 
-cudnn 8.9.0  
-chrome 125.0.6422.112 (크롬 버전에 맞게 chromedriver 넣어줘야함)
+  
+파이썬 3.8.6   
+cuda 11.7   
+cudnn 8.9.0    
+chrome 125.0.6422.112 (크롬 버전에 맞게 chromedriver 넣어줘야함)  
 
 
 # 게임 실행
