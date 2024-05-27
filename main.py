@@ -34,7 +34,7 @@ class DQNAgent:
         self.gamma = 0.95    # discount rate
         self.epsilon = 1.0   # exploration rate
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.99995
+        self.epsilon_decay = 0.999
         self.learning_rate = 0.001
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = DQN(state_size, action_size).to(self.device)
@@ -85,6 +85,14 @@ def initialize_environment():
         
     # YOLO 모델 로드
     model = YOLO('runs/detect/train3/weights/best.pt')
+    # GPU가 사용 가능한지 확인하고 모델을 GPU로 이동
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = model.to(device)
+    
+    if torch.cuda.is_available():
+        print("CUDA is available. Running on GPU.")
+    else:
+        print("CUDA is not available. Running on CPU.")
 
     # Chrome 옵션 설정
     options = webdriver.ChromeOptions()
@@ -129,8 +137,8 @@ def get_state(driver, model):
     # YOLO 모델로 디텍팅
     results = model(screenshot, verbose=False)[0]
 
-    # 16x16 배열 초기화
-    grid_size = 16
+    # 32x32 배열 초기화
+    grid_size = 32
     cell_size = 640 // grid_size
     grid = np.zeros((grid_size, grid_size), dtype=int)
 
@@ -146,7 +154,7 @@ def get_state(driver, model):
         # cv2.putText(screenshot, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
         # 중앙점 계산 및 그리드 셀에 표시
-        center_x = (x1 + x2) // 2
+        center_x = x1
         center_y = (y1 + y2) // 2
         grid_x = center_x // cell_size
         grid_y = center_y // cell_size
@@ -181,7 +189,7 @@ def get_state(driver, model):
 
 # 메인 함수
 if __name__ == "__main__":
-    state_size = 16 * 16
+    state_size = 32 * 32
     action_size = 3 
     agent = DQNAgent(state_size, action_size)
     model_path = "dqn-dino.pth"
@@ -204,7 +212,6 @@ if __name__ == "__main__":
         
         for t in range(5000):
             action = agent.act(state)
-            print(action)
             if action == 0:
                 actions.key_up(Keys.DOWN).perform()
                 body.send_keys(Keys.SPACE)  # Jump
@@ -225,7 +232,8 @@ if __name__ == "__main__":
             done = is_game_over(driver, game_over_template)
             if done:
                 reward = -20  # 게임 오버 시 보상을 0으로 설정
-
+      
+            print(action,"->",reward)
             agent.remember(state, action, reward, next_state, done)
             state = next_state
             
