@@ -34,7 +34,7 @@ class DQNAgent:
         self.gamma = 0.95    # discount rate
         self.epsilon = 1.0   # exploration rate
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.999
+        self.epsilon_decay = 0.95
         self.learning_rate = 0.001
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = DQN(state_size, action_size).to(self.device)
@@ -50,7 +50,8 @@ class DQNAgent:
         state = torch.FloatTensor(state).to(self.device)
         with torch.no_grad():
             act_values = self.model(state)
-        return torch.argmax(act_values[0]).item()
+        print(act_values)
+        return torch.argmax(act_values).item()
     
     def replay(self, batch_size):
         if len(self.memory) < batch_size:
@@ -225,9 +226,9 @@ if __name__ == "__main__":
             if action==0:
                 reward = 1
             elif action==1:
-                reward = 3
+                reward = 1
             else:
-                reward = 5
+                reward = 1
 
             done = is_game_over(driver, game_over_template)
             if done:
