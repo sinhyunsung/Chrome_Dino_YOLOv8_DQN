@@ -17,3 +17,17 @@ python main.py
 ~~DQN 레이어 잘못된점 수정~~    
 ~~각 행동 reward 수정~~  
 게임속도 점점 빨라지는것 반영안됨  
+
+# 결과
+
+## episode 0  
+![에피소드0](https://github.com/sinhyunsung/Chrome_Dino_YOLOv8_DQN/assets/37778339/d18033ed-7c4e-4ffd-b4a1-baf85f7e4f64)
+
+## episode 100  
+![에피소드100](https://github.com/sinhyunsung/Chrome_Dino_YOLOv8_DQN/assets/37778339/c75a2dcd-9f90-443e-82aa-a923e6670c0d)
+
+## episode 200  
+![에피소드200](https://github.com/sinhyunsung/Chrome_Dino_YOLOv8_DQN/assets/37778339/3160ed54-01b7-4b35-89e3-7ed41189157f)
+
+## episode 300  
+![에피소드300](https://github.com/sinhyunsung/Chrome_Dino_YOLOv8_DQN/assets/37778339/f4b9ce98-2cfa-47c4-9935-6df102c8fc85)
